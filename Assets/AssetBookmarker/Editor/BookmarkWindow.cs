@@ -53,7 +53,6 @@ namespace AssetBookmarker
             }
 
             EditorGUILayout.LabelField("ブックマークしたアセット一覧を表示します");
-
             this.list.DoLayoutList();
         }
 
@@ -110,22 +109,32 @@ namespace AssetBookmarker
                 rect.height -= 4;
 
                 var labelRect = new Rect(rect);
-                labelRect.width = 17f;
+                labelRect.width = 13f;
+
+                var buttonRect = new Rect(rect);
+                buttonRect.x += labelRect.width + 8f;
+                buttonRect.width = 20f;
+                buttonRect.y += 1f;
+                buttonRect.height -= 2f;
 
                 var objectRect = new Rect(rect);
-                objectRect.width -= labelRect.width;
-                objectRect.x += labelRect.width;
+                objectRect.width -= labelRect.width + buttonRect.width + 18f;
+                objectRect.x += labelRect.width + buttonRect.width + 16f;
 
                 EditorGUI.LabelField(labelRect, index.ToString());
-
                 EditorGUI.BeginChangeCheck();
                 var asset = (Object)list.list[index];
                 asset = EditorGUI.ObjectField(objectRect, asset, typeof(Object), false);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Debug.Log("Changed");
                     list.list[index] = asset;
                     EditorUtility.SetDirty(_data);
+                }
+
+                // remove
+                if (GUI.Button(buttonRect, "-"))
+                {
+                    this.DoRemoveButton(list, index);
                 }
             };
 
@@ -146,6 +155,18 @@ namespace AssetBookmarker
             this.list.onChangedCallback += (index) =>
             {
                 EditorUtility.SetDirty(_data);
+            };
+        }
+
+        /// <summary>
+        /// 要素の削除
+        /// </summary>
+        public void DoRemoveButton(ReorderableList list, int index)
+        {
+            EditorApplication.delayCall += () =>
+            {
+                list.list.RemoveAt(index);
+                this.Repaint();
             };
         }
     }
