@@ -4,7 +4,7 @@ Unity-AssetBookmarker
 
 Asset Bookmarks
 -------
-You can bookmark assets that belong to your project.
+You can bookmark the assets that belong to your project.
 
 step1: Right-click the asset which you want to bookmark.
 <br>
@@ -27,10 +27,10 @@ You can choose which assets appear in the bookmarks.
 
 Hierarchy Bookmarks
 ---
-You can bookmark search filters in the Hierarchy search box. (since **v2.0**)
+You can bookmark the text in the Hierarchy search box. (since  **v2.0**)
 
 <br>
-step1: Right-click the GamaObject in Hierarchy which you want to bookmark.
+step1: Right-click the GamaObject in the Hierarchy window which you want to bookmark.
 <br>
 <img src = "./Demo/hierarchy_1.png">
 <br>
@@ -47,7 +47,7 @@ That's it!
 <img width = 500 src = "./Demo/hierarchy_3.png">
 
 <br>
-You can paste text into the Hierarchy search box by clicking the "Apply" button.
+You can paste the text into the Hierarchy search box by clicking the "Apply" button.
 <img width = 500 src = "./Demo/hierarchy.gif">
 
 That's all.
