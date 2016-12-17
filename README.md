@@ -2,20 +2,56 @@ Unity-AssetBookmarker
 ============
 **AssetBookmarker** is a tool to bookmark Unity assets.
 
-Usage
+Asset Bookmarks
 -------
-1) Right-click the asset which you want to bookmark.
-![](./Demo/1.png)
+You can bookmark assets that belong to your project.
 
+step1: Right-click the asset which you want to bookmark.
+<br>
+<img width = 500 src = "./Demo/1.png">
+<br>
 <br>
 
-2) Select "Add to bookmark list" in context menu.
-![](./Demo/2.png)
-
+step2: Select "Add to bookmark list" in context menu.
+<br>
+<img width = 500 src = "./Demo/2.png">
+<br>
 <br>
 
 That's it!
-![](./Demo/3.png)
+<br>
+<img width = 500 src = "./Demo/3.png">
+<br>
+You can choose which assets appear in the bookmarks.
+
+
+Hierarchy Bookmarks
+---
+You can bookmark search filters in the Hierarchy search box. (since **v2.0**)
+
+<br>
+step1: Right-click the GamaObject in Hierarchy which you want to bookmark.
+<br>
+<img src = "./Demo/hierarchy_1.png">
+<br>
+<br>
+
+step2: Select "Add to bookmark list" in context menu.
+<br>
+<img  width = 500 src = "./Demo/hierarchy_2.png">
+<br>
+<br>
+
+That's it!
+<br>
+<img width = 500 src = "./Demo/hierarchy_3.png">
+
+<br>
+You can paste text into the Hierarchy search box by clicking the "Apply" button.
+<img width = 500 src = "./Demo/hierarchy.gif">
+
+That's all.
+
 
 
 License
