@@ -12,7 +12,7 @@ namespace AssetBookmarker.Project
     /// </summary>
     public class ProjectBookmarkData : ScriptableObject
     {
-        [SerializeField] private List<Object> assets;
+        [SerializeField] private List<Object> assets = new List<Object>();
 
         /// <summary>
         /// ブックマークとして登録しているアセット

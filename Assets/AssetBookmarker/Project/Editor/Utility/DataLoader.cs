@@ -10,19 +10,27 @@ namespace AssetBookmarker.Project
     /// <summary>
     /// データのロードを行うクラス
     /// </summary>
-    public class DataLoader
+    public class DataLoader : AssetPostprocessor
     {
+        /// <summary>
+        /// アセットのインポート完了時に呼ばれる
+        /// </summary>
+        static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+        {
+            ProjectBookmarkWindow.OnLoadAssets();
+        }
+        
         /// <summary>
         /// Bookmarkデータのロード
         /// </summary>
-        public static ProjectBookmarkData LoadData()
+        public static ProjectBookmarkData[] LoadData()
         {
              return AssetDatabase.FindAssets("t:ScriptableObject")
             .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
             .Select(path => AssetDatabase.LoadAssetAtPath(path, typeof(ProjectBookmarkData)))
             .Where(obj => obj != null)
             .Select(obj => (ProjectBookmarkData)obj)
-            .FirstOrDefault();
+            .ToArray();
         }
     }
 }

@@ -4,8 +4,10 @@
 ///-----------------------------------------
 namespace AssetBookmarker.Project
 {
+    using System.Linq;
     using UnityEngine;
     using UnityEditor;
+    using UnityEditor.Callbacks;
     using UnityEditorInternal;
 
     /// <summary>
@@ -14,9 +16,19 @@ namespace AssetBookmarker.Project
     public class ProjectBookmarkWindow : EditorWindow
     {
         /// <summary>
-        /// Bookmarkデータ
+        /// Label領域の大きさ
         /// </summary>
-        private ProjectBookmarkData bookmarkData;
+        private const float LabelWidth = 68f;
+        
+        /// <summary>
+        /// ボタンの大きさ
+        /// </summary>
+        private const float ButtonWidth = 46f;
+
+        /// <summary>
+        /// ポップアップ表示用の文字列
+        /// </summary>
+        private string[] popupDisplayedOptions;
 
         /// <summary>
         /// Bookmark表示用のReorderableList
@@ -24,21 +36,94 @@ namespace AssetBookmarker.Project
         private ReorderableList bookmarkList;
 
         /// <summary>
+        /// 現在選択しているブックマーク
+        /// </summary>
+        [SerializeField] private int currentBookmarkIndex = 0;
+
+        /// <summary>
+        /// 現在選択しているブックマークデータ名
+        /// </summary>
+        [SerializeField] private string currentBookmarkName;
+        
+        /// <summary>
+        /// ブックマーク情報
+        /// </summary>
+        private ProjectBookmarkData[] bookmarkDatas;
+
+        private static EditorWindow window;
+        private static bool needReloadData = false;
+        private static Object[] willRegisterAssets = null;
+
+        /// <summary>
+        /// アセットのロード時に呼ばれる
+        /// </summary> 
+        [DidReloadScripts]
+        [InitializeOnLoadMethodAttribute]
+        public static void OnLoadAssets()
+        {
+            needReloadData = true;
+        }
+
+        /// <summary>
         /// ウィンドウの描画処理
         /// </summary>
-        void OnGUI()
+        private void OnGUI()
         {
-            if (this.bookmarkData == null)
+            if (window == null)
             {
-                this.bookmarkData = DataLoader.LoadData();
+                window = this;
             }
-            
+
+            if (needReloadData)
+            {
+                needReloadData = false;
+                this.ReloadDatas();
+            }
+
+            if (bookmarkDatas == null)
+            {
+                this.ReloadDatas();
+            }
+
             if (this.bookmarkList == null)
             {
                 this.RebuildBookmarkList();
             }
+            
+            if (willRegisterAssets != null)
+            {
+                var data = this.bookmarkDatas[this.currentBookmarkIndex]; 
+                data.Assets.AddRange(willRegisterAssets);
+                EditorUtility.SetDirty(data);
+                willRegisterAssets = null;
+            }
 
             EditorGUILayout.LabelField(Config.GUI_WINDOW_PROJECT_TEXT_OVERVIEW);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.LabelField("Bookmark", GUILayout.Width(LabelWidth));
+            int index = EditorGUILayout.Popup(this.currentBookmarkIndex, this.popupDisplayedOptions);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (index < bookmarkDatas.Length)
+                {
+                    this.currentBookmarkIndex = index;
+                    this.currentBookmarkName = this.bookmarkDatas[this.currentBookmarkIndex].name;
+                    this.RebuildBookmarkList();
+                }
+                else
+                {
+                    DataGenerator.CreateBookmarkData();
+                    this.ReloadDatas();
+                    this.RebuildBookmarkList();
+                }
+            }
+            if (GUILayout.Button("Select", EditorStyles.miniButton, GUILayout.Width(ButtonWidth)))
+            {
+                EditorGUIUtility.PingObject(bookmarkDatas[this.currentBookmarkIndex]);
+            }
+            EditorGUILayout.EndHorizontal();
+
             this.bookmarkList.DoLayoutList();
 
             CustomUI.VersionLabel();
@@ -47,15 +132,50 @@ namespace AssetBookmarker.Project
         /// <summary>
         /// ReorderableListを作成する
         /// </summary>
-        void RebuildBookmarkList()
+        private void RebuildBookmarkList()
         {
-            this.bookmarkList = this.CreateBookmarkList();
+            this.bookmarkList = CreateBookmarkList(bookmarkDatas[this.currentBookmarkIndex]);
+        }
+
+        /// <summary>
+        /// データのリロード
+        /// </summary>
+        private void ReloadDatas()
+        {
+            this.bookmarkDatas = DataLoader.LoadData();
+            if (this.bookmarkDatas.Length == 0)
+            {
+                Debug.LogWarning("bookmark not found");
+                DataGenerator.CreateBookmarkDataImmediately();
+                this.bookmarkDatas = DataLoader.LoadData();
+                this.RebuildBookmarkList();
+            }
+
+            this.popupDisplayedOptions = this.bookmarkDatas
+            .Select(b => b.name)
+            .Concat(new[] { "", "New..." }).ToArray();
+
+            var selection = this.bookmarkDatas
+            .Select((d,i) => new { Data = d, Index = i })
+            .FirstOrDefault(item => item.Data.name == this.currentBookmarkName);
+
+            if (selection != null)
+            {
+                this.currentBookmarkIndex = selection.Index;
+            }
+            else
+            {
+                // 直前に選択していたブックマークが見つからなかった場合は選択リセット
+                this.currentBookmarkIndex = 0;
+            }
+
+            this.currentBookmarkName = this.bookmarkDatas[this.currentBookmarkIndex].name;
         }
 
         /// <summary>
         /// ReorderableListを作成する
         /// </summary>
-        private ReorderableList CreateBookmarkList()
+        static private ReorderableList CreateBookmarkList(ProjectBookmarkData bookmarkData)
         {
             var list = new ReorderableList(bookmarkData.Assets, typeof(Object));
 
@@ -105,7 +225,8 @@ namespace AssetBookmarker.Project
 
                 if (GUI.Button(buttonRect, "-"))
                 {
-                    this.DoRemoveButton(list, index);
+                    DoRemoveButton(list, index);
+                    EditorUtility.SetDirty(bookmarkData);
                 }
             };
 
@@ -120,13 +241,12 @@ namespace AssetBookmarker.Project
         /// <summary>
         /// 要素の削除
         /// </summary>
-        public void DoRemoveButton(ReorderableList list, int index)
+        static private void DoRemoveButton(ReorderableList list, int index)
         {
             EditorApplication.delayCall += () =>
             {
                 list.list.RemoveAt(index);
-                this.Repaint();
-                EditorUtility.SetDirty(this.bookmarkData);
+                window.Repaint();
             };
         }
         
@@ -147,9 +267,7 @@ namespace AssetBookmarker.Project
         [MenuItem(Config.GUI_MENU_TEXT_REGISTER_PROJECT, false, 10001)]
         static void RegisterSelection()
         {
-            var data = DataLoader.LoadData();
-            data.Assets.AddRange(Selection.objects);
-            EditorUtility.SetDirty(data);
+            willRegisterAssets = Selection.objects.Where(obj => AssetDatabase.IsMainAsset(obj)).ToArray();
             Open();
         }
 

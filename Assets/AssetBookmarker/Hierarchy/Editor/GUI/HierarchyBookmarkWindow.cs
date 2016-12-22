@@ -4,6 +4,7 @@
 ///-----------------------------------------
 namespace AssetBookmarker.Hierarchy
 {
+    using System.Linq;
     using UnityEngine;
     using UnityEditor;
     using UnityEditorInternal;
@@ -149,7 +150,9 @@ namespace AssetBookmarker.Hierarchy
         static void RegisterSelectionToPalette()
         {
             var data = DataLoader.LoadData();
-            data.SearchInfos.Add(new SearchInfo { Text = Selection.activeObject.name } );
+            data.SearchInfos.AddRange(
+                Selection.gameObjects.Select(go => new SearchInfo { Text = go.name })
+            );
             EditorUtility.SetDirty(data);
             Open();
         }

@@ -4,15 +4,13 @@
 ///-----------------------------------------
 namespace AssetBookmarker
 {
-    using UnityEngine;
-
     /// <summary>
     /// 設定
     /// </summary>
-    public class Config
+    public static class Config
     {
         // バージョン情報
-        public const string VERSION_TEXT = "Asset Bookmarker v2.0";
+        public const string VERSION_TEXT = "Asset Bookmarker v2.1";
 
         // Menuテキスト
         public const string GUI_MENU_TEXT_OPEN_BOOKMARK_PROJECT = "Tools/Asset Bookmarker/Assets";
