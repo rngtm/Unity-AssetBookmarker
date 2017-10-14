@@ -267,7 +267,7 @@ namespace AssetBookmarker.Project
         [MenuItem(Config.GUI_MENU_TEXT_REGISTER_PROJECT, false, 10001)]
         static void RegisterSelection()
         {
-            willRegisterAssets = Selection.objects.Where(obj => AssetDatabase.IsMainAsset(obj)).ToArray();
+            willRegisterAssets = Selection.objects;
             Open();
         }
 

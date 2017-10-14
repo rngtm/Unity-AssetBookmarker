@@ -1,4 +1,4 @@
-﻿///-----------------------------------------
+///-----------------------------------------
 /// AssetBookmarker
 /// @ 2016 RNGTM(https://github.com/rngtm)
 ///-----------------------------------------
@@ -21,6 +21,8 @@ namespace AssetBookmarker.Hierarchy
         /// </summary>
         private ReorderableList searchInfoList;
 
+        private Vector2 scrollPosition = Vector2.zero;
+
         /// <summary>
         /// ウィンドウ描画処理
         /// </summary>
@@ -30,7 +32,9 @@ namespace AssetBookmarker.Hierarchy
             {
                 this.bookmarkData = DataLoader.LoadData();
             }
-            
+
+            this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
+
             if (this.searchInfoList == null)
             {
                 this.RebuildSearchInfoList();
@@ -39,10 +43,11 @@ namespace AssetBookmarker.Hierarchy
             EditorGUILayout.LabelField(Config.GUI_WINDOW_HIERARCHY_TEXT_OVERVIEW);
 
             this.searchInfoList.DoLayoutList();
+            EditorGUILayout.EndScrollView();
 
             CustomUI.VersionLabel();
         }
-        
+
         /// <summary>
         /// ReorderableList作成
         /// </summary>
@@ -98,6 +103,11 @@ namespace AssetBookmarker.Hierarchy
                 {
                     var data = (SearchInfo)reorderableList.list[index];
                     SceneHierarchyAccessor.SetSearchFilter(data.Text);
+
+                    if (!string.IsNullOrEmpty(data.Text))
+                    {
+                        SceneHierarchyAccessor.SelectTop();
+                    }
                 }
 
                 if (GUI.Button(removeButtonRect, Config.GUI_WINDOW_HIERARCHY_TEXT_FILTER_REMOVE_BUTTON))
@@ -114,7 +124,7 @@ namespace AssetBookmarker.Hierarchy
                 }
             };
 
-            reorderableList.drawElementBackgroundCallback = (rect, index, isActive, isFocused) => {};
+            reorderableList.drawElementBackgroundCallback = (rect, index, isActive, isFocused) => { };
 
             return reorderableList;
         }
@@ -131,7 +141,7 @@ namespace AssetBookmarker.Hierarchy
                 EditorUtility.SetDirty(this.bookmarkData);
             };
         }
-        
+
         /// <summary>
         /// ウィンドウを開く
         /// </summary>
@@ -156,7 +166,7 @@ namespace AssetBookmarker.Hierarchy
             EditorUtility.SetDirty(data);
             Open();
         }
-        
+
         /// <summary>
         /// RegisterSelectionToPaletteのValidateメソッド
         /// </summary>
