@@ -2,8 +2,14 @@ Unity-AssetBookmarker
 ============
 **AssetBookmarker** is a tool to bookmark Unity assets.
 
-Asset Bookmarks
--------
+<br>
+
+# Git Path (Unity Package Manager)
+> https://github.com/rngtm/Unity-AssetBookmarker.git?path=Assets/AssetBookmarker
+
+<br>
+
+# How to use
 You can bookmark the assets that belong to your project.
 
 step1: Right-click the asset which you want to bookmark.
@@ -24,9 +30,9 @@ That's it!
 <br>
 You can choose which assets appear in the bookmarks.
 
+<br>
 
-Hierarchy Bookmarks
----
+# Hierarchy Bookmarks
 You can bookmark the text in the Hierarchy search box. (since  **v2.0**)
 
 <br>
