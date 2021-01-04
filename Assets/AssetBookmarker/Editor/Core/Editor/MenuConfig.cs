@@ -10,7 +10,7 @@ namespace AssetBookmarker
     public static class MenuConfig
     {
         // バージョン情報
-        public const string VERSION_TEXT = "Asset Bookmarker v1.0.0";
+        public const string VERSION_TEXT = "Asset Bookmarker v1.0.1";
 
         // Toolメニュー ルート
         public const string TOOL_MENU_ROOT = "Tools/Asset Bookmarker/Test/";

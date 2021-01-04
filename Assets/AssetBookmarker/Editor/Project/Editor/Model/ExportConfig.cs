@@ -25,7 +25,7 @@ namespace AssetBookmarker.Project
         /// <summary>
         /// Bookmarkデータの保存先の相対パス(Packageフォルダ以下)
         /// </summary>
-        private static readonly string PackageSaveFolderPath = PackageConfig.GetPackagePath(DataRealtivePath);
+        private static readonly string PackageSaveFolderPath = "Assets/AssetBookmarker/" + DataRealtivePath;
 
         /// <summary>
         /// 新規Bookmarkデータのデフォルトの名前

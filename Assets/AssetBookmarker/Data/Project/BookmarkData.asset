@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: BookmarkData
   m_EditorClassIdentifier: 
   assets:
-  - {fileID: 11400000, guid: 83c2ed844a8c74b779a4c823d16594b1, type: 2}
+  - {fileID: 102900000, guid: 49110bb8dcada46328ad741970bce702, type: 3}

@@ -1,7 +1,7 @@
 {
     "name": "com.rngtm.asset-bookmarker",
     "displayName": "AssetBookmarker", 
-    "version": "1.0.0",               
+    "version": "1.0.1",               
     "unity": "2020.2",
     "description": "A tool for bookmark assets.",
     "author": {

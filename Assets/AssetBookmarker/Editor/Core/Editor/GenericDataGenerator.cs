@@ -22,9 +22,7 @@ namespace AssetBookmarker
         /// </summary>
         public static T CreateData<T>(string dataName) where T : ScriptableObject
         {
-            // var directory = PackageConfig.GetPackagePath(ExportConfig.PackageSaveFolderPath);
             var directory = ExportConfig.GetDataExportDirectory();
-            // var path = Path.Combine(directory, dataName + ".asset");
             var path = directory + "/" + dataName + ".asset";
             Debug.Log(path);
             var instance = ScriptableObject.CreateInstance<T>();
@@ -32,7 +30,19 @@ namespace AssetBookmarker
 
             return instance;
         }
-        
+
+        public static T CreateDataInProject<T>(string dataName) where T : ScriptableObject
+        {
+            T instance = null;
+            string path = EditorUtility.SaveFilePanelInProject("New BookmarkData", dataName + ".asset", "asset", "Create New Bookmark Data");
+            if (!string.IsNullOrEmpty(path))
+            {
+                instance = ScriptableObject.CreateInstance<T>();
+                AssetDatabase.CreateAsset(instance, path);
+                EditorGUIUtility.PingObject(instance);
+            }
+            return instance;
+        }
 
         /// <summary>
         /// データ作成(名前入力無しですぐに作成)

@@ -114,9 +114,14 @@ namespace AssetBookmarker.Project
                 else // New... を選択した場合
                 {
                     // DataGenerator.CreateBookmarkData();
-                    DataGenerator.CreateBookmarkDataImmediately();
-                    this.ReloadDatas();
-                    this.RebuildBookmarkList();
+                    // DataGenerator.CreateBookmarkDataImmediately();
+
+                    var instance = GenericDataGenerator.CreateDataInProject<ProjectBookmarkData>(ExportConfig.DefaultAssetName);
+                    if (instance != null)
+                    {
+                        this.ReloadDatas();
+                        this.RebuildBookmarkList();
+                    }
                 }
             }
             if (GUILayout.Button("Select", EditorStyles.miniButton, GUILayout.Width(ButtonWidth)))
