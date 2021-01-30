@@ -29,7 +29,7 @@ namespace AssetBookmarker.Hierarchy
             // 検索ボックスの文字列を設定
             var mode = (SearchableEditorWindow.SearchMode)typeWindow.GetField("m_SearchMode", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(window);
             var setAll = false;
-#if UNITY_2020_2_OR_NEWER
+#if UNITY_2018_3_OR_NEWER
             var delayed = false;
             typeWindow
                 .GetMethod("SetSearchFilter", BindingFlags.Instance | BindingFlags.NonPublic)
@@ -59,17 +59,17 @@ namespace AssetBookmarker.Hierarchy
         /// </summary>
         public static IList<TreeViewItem> GetRows()
         {
-#if UNITY_2020_2_OR_NEWER
-            return GetRows_2020_2_OR_NEWER();
+#if UNITY_2018_3_OR_NEWER
+            return GetRows_UNITY_2018_3_OR_NEWER();
 #else
-            return GetRows_2019();
+            return GetRows_OLD();
 #endif
         }
         
         /// <summary>
         /// ヒエラルキーウィンドウ上の項目の一覧取得
         /// </summary>
-        public static IList<TreeViewItem> GetRows_2020_2_OR_NEWER()
+        public static IList<TreeViewItem> GetRows_UNITY_2018_3_OR_NEWER()
         {
             // private SceneHierarchy m_SceneHierarchy;
 
@@ -102,7 +102,7 @@ namespace AssetBookmarker.Hierarchy
         /// <summary>
         /// ヒエラルキーウィンドウ上の項目の一覧取得
         /// </summary>
-        public static IList<TreeViewItem> GetRows_2019()
+        public static IList<TreeViewItem> GetRows_OLD()
         {
             // Hierarchyウィンドウ取得
             var asm = Assembly.Load("UnityEditor.dll");
