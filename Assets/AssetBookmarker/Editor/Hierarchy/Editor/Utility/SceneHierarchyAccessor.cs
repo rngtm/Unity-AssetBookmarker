@@ -25,12 +25,21 @@ namespace AssetBookmarker.Hierarchy
             var asm = Assembly.Load("UnityEditor.dll");
             var typeWindow = asm.GetType("UnityEditor.SceneHierarchyWindow");
             var window = EditorWindow.GetWindow(typeWindow);
-
+            
             // 検索ボックスの文字列を設定
             var mode = (SearchableEditorWindow.SearchMode)typeWindow.GetField("m_SearchMode", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(window);
             var setAll = false;
-            typeWindow.GetMethod("SetSearchFilter", BindingFlags.Instance | BindingFlags.NonPublic)
-            .Invoke(window, new object[] { filter, mode, setAll });
+#if UNITY_2020_2_OR_NEWER
+            var delayed = false;
+            typeWindow
+                .GetMethod("SetSearchFilter", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(window, new object[] { filter, mode, setAll, delayed });
+#else
+            typeWindow
+                .GetMethod("SetSearchFilter", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(window, new object[] { filter, mode, setAll });
+#endif
+            
         }
 
         /// <summary>
@@ -50,6 +59,51 @@ namespace AssetBookmarker.Hierarchy
         /// </summary>
         public static IList<TreeViewItem> GetRows()
         {
+#if UNITY_2020_2_OR_NEWER
+            return GetRows_2020_2_OR_NEWER();
+#else
+            return GetRows_2019();
+#endif
+        }
+        
+        /// <summary>
+        /// ヒエラルキーウィンドウ上の項目の一覧取得
+        /// </summary>
+        public static IList<TreeViewItem> GetRows_2020_2_OR_NEWER()
+        {
+            // private SceneHierarchy m_SceneHierarchy;
+
+            // Hierarchyウィンドウ取得
+            var asm = Assembly.Load("UnityEditor.dll");
+            var typeWindow = asm.GetType("UnityEditor.SceneHierarchyWindow");
+            var window = EditorWindow.GetWindow(typeWindow);
+
+            // Get : SceneHierarchyWindow.m_SceneHierarchy
+            var sceneHierarchy = typeWindow
+                .GetField("m_SceneHierarchy", BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetValue(window);
+            
+            // Get : m_SceneHierarchy.m_TreeView
+            var m_TreeView = sceneHierarchy.GetType()
+                .GetField("m_TreeView", BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetValue(sceneHierarchy);
+            
+            // Get : m_TreeView.data
+            var data = m_TreeView.GetType()
+                .GetProperty("data", BindingFlags.Instance | BindingFlags.Public)
+                .GetValue(m_TreeView, null);
+            
+            // Invoke : TreeViewController.GetRows()
+            return (IList<TreeViewItem>)data.GetType()
+                .GetMethod("GetRows", BindingFlags.Instance | BindingFlags.Public)
+                .Invoke(data, null);
+        }
+        
+        /// <summary>
+        /// ヒエラルキーウィンドウ上の項目の一覧取得
+        /// </summary>
+        public static IList<TreeViewItem> GetRows_2019()
+        {
             // Hierarchyウィンドウ取得
             var asm = Assembly.Load("UnityEditor.dll");
             var typeWindow = asm.GetType("UnityEditor.SceneHierarchyWindow");
@@ -57,11 +111,11 @@ namespace AssetBookmarker.Hierarchy
 
             // GetRows実行
             var m_TreeView = typeWindow.GetField("m_TreeView", BindingFlags.Instance | BindingFlags.NonPublic)
-            .GetValue(window);
+                .GetValue(window);
             var data = m_TreeView.GetType().GetProperty("data", BindingFlags.Instance | BindingFlags.Public)
-            .GetValue(m_TreeView, null);
+                .GetValue(m_TreeView, null);
             return (IList<TreeViewItem>)data.GetType().GetMethod("GetRows", BindingFlags.Instance | BindingFlags.Public)
-            .Invoke(data, null);
+                .Invoke(data, null);
         }
     }
 }
