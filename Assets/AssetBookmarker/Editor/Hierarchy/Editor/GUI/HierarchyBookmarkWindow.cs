@@ -99,6 +99,7 @@ namespace AssetBookmarker.Hierarchy
                 removeButtonRect.height -= 1f;
                 removeButtonRect.x = textRect.x + textRect.width + 2;
 
+                // Apply Button
                 if (GUI.Button(selectButtonRect, MenuConfig.GUI_WINDOW_HIERARCHY_TEXT_FILTER_APPLY_BUTTON, EditorStyles.miniButton))
                 {
                     var data = (SearchInfo)reorderableList.list[index];
@@ -110,6 +111,7 @@ namespace AssetBookmarker.Hierarchy
                     }
                 }
 
+                // Remove Button
                 if (GUI.Button(removeButtonRect, MenuConfig.GUI_WINDOW_HIERARCHY_TEXT_FILTER_REMOVE_BUTTON))
                 {
                     this.DoRemoveButton(index);
