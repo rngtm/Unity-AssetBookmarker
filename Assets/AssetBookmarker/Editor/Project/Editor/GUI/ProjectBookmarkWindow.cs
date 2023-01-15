@@ -106,7 +106,7 @@ namespace AssetBookmarker.Project
                 willRegisterAssets = null;
             }
 
-            prevIcon ??= EditorGUIUtility.IconContent("d_Profiler.PrevFrame");
+            prevIcon = EditorGUIUtility.IconContent("d_Profiler.PrevFrame");
             nextIcon = EditorGUIUtility.IconContent("d_Profiler.NextFrame");
 
             EditorGUILayout.LabelField(MenuConfig.GUI_WINDOW_PROJECT_TEXT_OVERVIEW);
