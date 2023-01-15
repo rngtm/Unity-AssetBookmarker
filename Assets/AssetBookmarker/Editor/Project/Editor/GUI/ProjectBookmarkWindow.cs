@@ -19,7 +19,12 @@ namespace AssetBookmarker.Project
         /// Label領域の大きさ
         /// </summary>
         private const float LabelWidth = 68f;
-        
+
+        /// <summary>
+        /// Directional button size
+        /// </summary>
+        private const float DirButtonWidth = 16f;
+
         /// <summary>
         /// ボタンの大きさ
         /// </summary>
@@ -44,7 +49,7 @@ namespace AssetBookmarker.Project
         /// 現在選択しているブックマークデータ名
         /// </summary>
         [SerializeField] private string currentBookmarkName;
-        
+
         /// <summary>
         /// ブックマーク情報
         /// </summary>
@@ -54,9 +59,12 @@ namespace AssetBookmarker.Project
         private static bool needReloadData = false;
         private static Object[] willRegisterAssets = null;
 
+        private static GUIContent prevIcon;
+        private static GUIContent nextIcon;
+
         /// <summary>
         /// アセットのロード時に呼ばれる
-        /// </summary> 
+        /// </summary>
         [DidReloadScripts]
         [InitializeOnLoadMethodAttribute]
         public static void OnLoadAssets()
@@ -89,20 +97,42 @@ namespace AssetBookmarker.Project
             {
                 this.RebuildBookmarkList();
             }
-            
+
             if (willRegisterAssets != null)
             {
-                var data = this.bookmarkDatas[this.currentBookmarkIndex]; 
+                var data = this.bookmarkDatas[this.currentBookmarkIndex];
                 data.Assets.AddRange(willRegisterAssets);
                 EditorUtility.SetDirty(data);
                 willRegisterAssets = null;
             }
 
+            prevIcon = EditorGUIUtility.IconContent("d_Profiler.PrevFrame");
+            nextIcon = EditorGUIUtility.IconContent("d_Profiler.NextFrame");
+
             EditorGUILayout.LabelField(MenuConfig.GUI_WINDOW_PROJECT_TEXT_OVERVIEW);
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.LabelField("Bookmark", GUILayout.Width(LabelWidth));
-            int index = EditorGUILayout.Popup(this.currentBookmarkIndex, this.popupDisplayedOptions);
+
+            int dirIndex = currentBookmarkIndex;
+
+            EditorGUIUtility.SetIconSize(new Vector2(14, 14));
+            if (GUILayout.Button(prevIcon, EditorStyles.miniButton, GUILayout.Width(DirButtonWidth)))
+            {
+                if (dirIndex > 0) --dirIndex;
+            }
+
+            int index = EditorGUILayout.Popup(currentBookmarkIndex, popupDisplayedOptions);
+
+            EditorGUIUtility.SetIconSize(new Vector2(14, 14));
+            if (GUILayout.Button(nextIcon, EditorStyles.miniButton, GUILayout.Width(DirButtonWidth)))
+            {
+                if (dirIndex < bookmarkDatas.Length - 1) ++dirIndex;
+            }
+
+            if (index != currentBookmarkIndex) { }
+            else index = dirIndex;
+
             if (EditorGUI.EndChangeCheck())
             {
                 if (index < bookmarkDatas.Length)
@@ -255,7 +285,7 @@ namespace AssetBookmarker.Project
                 window.Repaint();
             };
         }
-        
+
         /// <summary>
         /// ウィンドウを開く
         /// </summary>
